@@ -2300,178 +2300,183 @@ const R={
     const legSwing=walking?Math.sin(fr*1.5):0;
     const armSwing=walking?Math.sin(fr*1.5):0;
 
-    // ── Back leg (two-segment dark red boot, pivot at hip) ──
+    // ── Helpers ──────────────────────────────────────────────
+    const dlLimb=(topW,botW,h,shade)=>{
+      const g=ctx.createLinearGradient(-topW/2,0,topW/2,0);
+      if(shade==='th'){g.addColorStop(0,'#380000');g.addColorStop(0.5,'#5A0000');g.addColorStop(1,'#380000');}
+      else{g.addColorStop(0,'#2A0000');g.addColorStop(0.5,'#420000');g.addColorStop(1,'#2A0000');}
+      ctx.fillStyle=g;
+      ctx.beginPath();ctx.moveTo(-topW/2,0);ctx.lineTo(topW/2,0);ctx.lineTo(botW/2,h);ctx.lineTo(-botW/2,h);ctx.closePath();ctx.fill();
+      ctx.fillStyle='rgba(180,0,0,0.32)';
+      ctx.beginPath();ctx.moveTo(-topW/2,0);ctx.lineTo(topW/2,0);ctx.lineTo(topW/2-0.5,6);ctx.lineTo(-topW/2+0.5,6);ctx.closePath();ctx.fill();
+      ctx.fillStyle='rgba(255,50,50,0.09)';
+      ctx.beginPath();ctx.moveTo(-topW/2,0);ctx.lineTo(-topW/2+3,0);ctx.lineTo(-botW/2+2,h);ctx.lineTo(-botW/2,h);ctx.closePath();ctx.fill();
+    };
+    const dlKnee=()=>{
+      const rg=ctx.createRadialGradient(-1,-1,1,0,0,5.5);
+      rg.addColorStop(0,'rgba(150,0,0,0.55)');rg.addColorStop(1,'#280000');
+      ctx.fillStyle=rg;ctx.beginPath();ctx.arc(0,0,5.5,0,Math.PI*2);ctx.fill();
+    };
+    const dlSole=()=>{
+      ctx.fillStyle='#1A0000';
+      ctx.beginPath();ctx.moveTo(-7,0);ctx.lineTo(8,0);ctx.quadraticCurveTo(14,1,12,10);ctx.lineTo(-8,10);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#100000';
+      ctx.beginPath();ctx.moveTo(-9,8);ctx.lineTo(13,8);ctx.lineTo(12,15);ctx.lineTo(-9,15);ctx.closePath();ctx.fill();
+    };
+    const dlSleeve=(topW,botW,h)=>{
+      const g=ctx.createLinearGradient(-topW/2,0,topW/2,0);
+      g.addColorStop(0,'#580000');g.addColorStop(0.5,'#860000');g.addColorStop(1,'#580000');
+      ctx.fillStyle=g;
+      ctx.beginPath();ctx.moveTo(-topW/2,-6);ctx.lineTo(topW/2,-6);ctx.lineTo(botW/2,h);ctx.lineTo(-botW/2,h);ctx.closePath();ctx.fill();
+      ctx.fillStyle='rgba(255,40,40,0.09)';
+      ctx.beginPath();ctx.moveTo(-topW/2,-6);ctx.lineTo(-topW/2+4,-6);ctx.lineTo(-botW/2+3,h);ctx.lineTo(-botW/2,h);ctx.closePath();ctx.fill();
+    };
+    const dlElbow=()=>{
+      const rg=ctx.createRadialGradient(-1,-1,1,0,0,5.5);
+      rg.addColorStop(0,'rgba(200,40,40,0.42)');rg.addColorStop(1,'#4C0000');
+      ctx.fillStyle=rg;ctx.beginPath();ctx.arc(0,0,5.5,0,Math.PI*2);ctx.fill();
+    };
+    const dlForearm=(ext)=>{
+      const g=ctx.createLinearGradient(-7,0,7,0);
+      g.addColorStop(0,'#8A4848');g.addColorStop(0.45,'#B47878');g.addColorStop(1,'#8A4848');
+      ctx.fillStyle=g;
+      ctx.beginPath();ctx.moveTo(-7,0);ctx.lineTo(7,0);ctx.lineTo(5,22+ext);ctx.lineTo(-5,22+ext);ctx.closePath();ctx.fill();
+      ctx.fillStyle='rgba(255,180,180,0.09)';
+      ctx.beginPath();ctx.moveTo(-7,0);ctx.lineTo(-3,0);ctx.lineTo(-2,22+ext);ctx.lineTo(-5,22+ext);ctx.closePath();ctx.fill();
+    };
+    const dlFist=(ext)=>{
+      ctx.fillStyle='#8A4848';
+      ctx.beginPath();
+      ctx.moveTo(-7,18+ext);ctx.lineTo(7,18+ext);
+      ctx.lineTo(8,22+ext);ctx.lineTo(8,32+ext);
+      ctx.lineTo(4,35+ext);ctx.lineTo(-6,35+ext);
+      ctx.lineTo(-8,31+ext);ctx.lineTo(-8,22+ext);
+      ctx.closePath();ctx.fill();
+      ctx.fillStyle='rgba(90,20,20,0.28)';
+      ctx.beginPath();ctx.moveTo(-7,18+ext);ctx.lineTo(7,18+ext);ctx.lineTo(7,24+ext);ctx.lineTo(-7,24+ext);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='#5A2020';ctx.lineWidth=0.5;
+      for(let i=0;i<4;i++){ctx.beginPath();ctx.moveTo(-4+i*3,19+ext);ctx.lineTo(-4+i*3,33+ext);ctx.stroke();}
+    };
+
+    // ── Back leg ──────────────────────────────────────────────
     if(scissorK){
-      // Scissor: back leg scissors through after front kick
       const skBkAng=scPh?0.3:-0.85;
       ctx.save();ctx.translate(-11,-80);ctx.rotate(skBkAng);
-      const skBkThG=ctx.createLinearGradient(-5,0,5,0);skBkThG.addColorStop(0,'#440000');skBkThG.addColorStop(0.5,'#660000');skBkThG.addColorStop(1,'#440000');
-      ctx.fillStyle=skBkThG;ctx.fillRect(-5,0,10,40);ctx.fillStyle='#990000';ctx.fillRect(-5,0,10,8);
-      ctx.fillStyle='#330000';ctx.beginPath();ctx.arc(0,40,5,0,Math.PI*2);ctx.fill();
-      ctx.save();ctx.translate(0,40);ctx.rotate(scPh?0.1:0.6);
-      ctx.fillStyle='#3A0000';ctx.fillRect(-5,0,10,28);ctx.save();ctx.translate(0,28);
-      ctx.fillStyle='#220000';ctx.fillRect(-6,0,12,12);ctx.restore();ctx.restore();ctx.restore();
+      dlLimb(14,10,40,'th');
+      ctx.save();ctx.translate(0,40);dlKnee();
+      ctx.rotate(scPh?0.1:0.6);dlLimb(10,7,28,'ca');
+      ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
+      ctx.restore();ctx.restore();
     }else if(hkickRaise>0){
       const kr=hkickRaise/0.80;
       ctx.save();ctx.translate(-11,-80);ctx.rotate(-1.4*kr);
-      const dlBkThKG=ctx.createLinearGradient(-5,0,5,0);dlBkThKG.addColorStop(0,'#440000');dlBkThKG.addColorStop(0.5,'#660000');dlBkThKG.addColorStop(1,'#440000');
-      ctx.fillStyle=dlBkThKG;ctx.fillRect(-5,0,10,40);
-      ctx.fillStyle='#990000';ctx.fillRect(-5,0,10,8);
-      ctx.fillStyle='rgba(255,80,80,0.15)';ctx.fillRect(-5,0,3,40);
-      ctx.fillStyle='#330000';ctx.beginPath();ctx.arc(0,40,5,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='rgba(180,0,0,0.40)';ctx.beginPath();ctx.arc(-1,38,2,0,Math.PI*2);ctx.fill();
-      ctx.save();ctx.translate(0,40);ctx.rotate(1.4*(1-kr));
-      const dlBkCaKG=ctx.createLinearGradient(-5,0,5,0);dlBkCaKG.addColorStop(0,'#3A0000');dlBkCaKG.addColorStop(0.5,'#550000');dlBkCaKG.addColorStop(1,'#3A0000');
-      ctx.fillStyle=dlBkCaKG;ctx.fillRect(-5,0,10,28);
-      ctx.fillStyle='rgba(255,60,60,0.12)';ctx.fillRect(-5,0,3,28);
-      ctx.save();ctx.translate(0,28);
-      ctx.fillStyle='#220000';ctx.fillRect(-6,0,12,12);
-      ctx.restore();
-      ctx.restore();
-      ctx.restore();
+      dlLimb(14,10,40,'th');
+      ctx.save();ctx.translate(0,40);dlKnee();
+      ctx.rotate(1.4*(1-kr));dlLimb(10,7,28,'ca');
+      ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
+      ctx.restore();ctx.restore();
     }else{
-      const dlBkThAng = walking ? -legSwing*0.30 : -0.06;
-      const dlBkCaAng = walking ?  legSwing*0.22  :  0.12;
-      ctx.save();ctx.translate(-11,-80);
-      ctx.rotate(dlBkThAng);
-      const dlBkThG=ctx.createLinearGradient(-5,0,5,0);dlBkThG.addColorStop(0,'#440000');dlBkThG.addColorStop(0.5,'#660000');dlBkThG.addColorStop(1,'#440000');
-      ctx.fillStyle=dlBkThG;ctx.fillRect(-5,0,10,40);
-      ctx.fillStyle='#990000';ctx.fillRect(-5,0,10,8);
-      ctx.fillStyle='rgba(255,80,80,0.15)';ctx.fillRect(-5,0,3,40);
-      ctx.save();ctx.translate(0,40);
-      ctx.fillStyle='#330000';ctx.beginPath();ctx.arc(0,0,5,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='rgba(180,0,0,0.40)';ctx.beginPath();ctx.arc(-1,-1,2,0,Math.PI*2);ctx.fill();
-      ctx.rotate(dlBkCaAng);
-      const dlBkCaG=ctx.createLinearGradient(-5,0,5,0);dlBkCaG.addColorStop(0,'#3A0000');dlBkCaG.addColorStop(0.5,'#550000');dlBkCaG.addColorStop(1,'#3A0000');
-      ctx.fillStyle=dlBkCaG;ctx.fillRect(-5,0,10,28);
-      ctx.fillStyle='rgba(255,60,60,0.12)';ctx.fillRect(-5,0,3,28);
-      ctx.save();ctx.translate(0,28);
-      ctx.fillStyle='#220000';ctx.fillRect(-6,0,12,12);
-      ctx.fillStyle='rgba(255,60,60,0.10)';ctx.fillRect(-6,0,3,12);
-      ctx.restore();
-      ctx.restore();
-      ctx.restore();
+      const bkTA=walking?-legSwing*0.30:-0.06;
+      const bkCA=walking?legSwing*0.22:0.12;
+      ctx.save();ctx.translate(-11,-80);ctx.rotate(bkTA);
+      dlLimb(14,10,40,'th');
+      ctx.save();ctx.translate(0,40);dlKnee();
+      ctx.rotate(bkCA);dlLimb(10,7,28,'ca');
+      ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
+      ctx.restore();ctx.restore();
     }
 
-    // ── Front leg (hip-pivot kick or two-segment boot) ──
+    // ── Front leg ─────────────────────────────────────────────
     if(scissorK){
-      // Scissor: front leg kicks first then trails
       const skFtAng=scPh?-0.90:0.25;
       ctx.save();ctx.translate(6,-80);ctx.rotate(skFtAng);
-      const skFtThG=ctx.createLinearGradient(-5,0,5,0);skFtThG.addColorStop(0,'#440000');skFtThG.addColorStop(0.5,'#660000');skFtThG.addColorStop(1,'#440000');
-      ctx.fillStyle=skFtThG;ctx.fillRect(-5,0,10,40);ctx.fillStyle='#990000';ctx.fillRect(-5,0,10,8);
-      ctx.fillStyle='#330000';ctx.beginPath();ctx.arc(0,40,5,0,Math.PI*2);ctx.fill();
-      ctx.save();ctx.translate(0,40);ctx.rotate(scPh?0.6:0.1);
-      ctx.fillStyle='#3A0000';ctx.fillRect(-5,0,10,28);ctx.save();ctx.translate(0,28);
-      ctx.fillStyle='#220000';ctx.fillRect(-6,0,12,12);ctx.restore();ctx.restore();ctx.restore();
+      dlLimb(14,10,40,'th');
+      ctx.save();ctx.translate(0,40);dlKnee();
+      ctx.rotate(scPh?0.6:0.1);dlLimb(10,7,28,'ca');
+      ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
+      ctx.restore();ctx.restore();
     }else if(kickRaise>0){
       const kr=kickRaise/0.85;
       ctx.save();ctx.translate(6,-80);ctx.rotate(-1.4*kr);
-      // thigh section
-      const dlFtThKG=ctx.createLinearGradient(-5,0,5,0);dlFtThKG.addColorStop(0,'#440000');dlFtThKG.addColorStop(0.5,'#660000');dlFtThKG.addColorStop(1,'#440000');
-      ctx.fillStyle=dlFtThKG;ctx.fillRect(-5,0,10,40);
-      ctx.fillStyle='#990000';ctx.fillRect(-5,0,10,8);
-      ctx.fillStyle='rgba(255,80,80,0.15)';ctx.fillRect(-5,0,3,40);
-      // knee cap
-      ctx.fillStyle='#330000';ctx.beginPath();ctx.arc(0,40,5,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='rgba(180,0,0,0.40)';ctx.beginPath();ctx.arc(-1,38,2,0,Math.PI*2);ctx.fill();
-      // calf+sole pivot
-      ctx.save();ctx.translate(0,40);ctx.rotate(1.4*(1-kr));
-      const dlFtCaKG=ctx.createLinearGradient(-5,0,5,0);dlFtCaKG.addColorStop(0,'#3A0000');dlFtCaKG.addColorStop(0.5,'#550000');dlFtCaKG.addColorStop(1,'#3A0000');
-      ctx.fillStyle=dlFtCaKG;ctx.fillRect(-5,0,10,28);
-      ctx.fillStyle='rgba(255,60,60,0.12)';ctx.fillRect(-5,0,3,28);
-      ctx.save();ctx.translate(0,28);
-      ctx.fillStyle='#220000';ctx.fillRect(-6,0,12,12);
-      ctx.restore();
-      ctx.restore();
-      ctx.restore();
+      dlLimb(14,10,40,'th');
+      ctx.save();ctx.translate(0,40);dlKnee();
+      ctx.rotate(1.4*(1-kr));dlLimb(10,7,28,'ca');
+      ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
+      ctx.restore();ctx.restore();
     }else{
-      const dlFtThAng = walking ?  legSwing*0.30 :  0.06;
-      const dlFtCaAng = walking ? -legSwing*0.22 :  0.08;
-      ctx.save();ctx.translate(6,-80);
-      ctx.rotate(dlFtThAng);
-      // thigh section
-      const dlFtThG=ctx.createLinearGradient(-5,0,5,0);dlFtThG.addColorStop(0,'#440000');dlFtThG.addColorStop(0.5,'#660000');dlFtThG.addColorStop(1,'#440000');
-      ctx.fillStyle=dlFtThG;ctx.fillRect(-5,0,10,40);
-      ctx.fillStyle='#990000';ctx.fillRect(-5,0,10,8);
-      ctx.fillStyle='rgba(255,80,80,0.15)';ctx.fillRect(-5,0,3,40);
-      ctx.fillStyle='rgba(0,0,0,0.12)';ctx.fillRect(3,0,2,40);
-      // knee cap accent
-      ctx.save();ctx.translate(0,40);
-      ctx.fillStyle='#330000';ctx.beginPath();ctx.arc(0,0,5,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='rgba(180,0,0,0.40)';ctx.beginPath();ctx.arc(-1,-1,2,0,Math.PI*2);ctx.fill();
-      ctx.rotate(dlFtCaAng);
-      // calf section
-      const dlFtCaG=ctx.createLinearGradient(-5,0,5,0);dlFtCaG.addColorStop(0,'#3A0000');dlFtCaG.addColorStop(0.5,'#550000');dlFtCaG.addColorStop(1,'#3A0000');
-      ctx.fillStyle=dlFtCaG;ctx.fillRect(-5,0,10,28);
-      ctx.fillStyle='rgba(255,60,60,0.12)';ctx.fillRect(-5,0,3,28);
-      // sole
-      ctx.save();ctx.translate(0,28);
-      ctx.fillStyle='#220000';ctx.fillRect(-6,0,12,12);
-      ctx.fillStyle='rgba(255,60,60,0.10)';ctx.fillRect(-6,0,3,12);
-      ctx.restore();
-      ctx.restore();
-      ctx.restore();
+      const ftTA=walking?legSwing*0.30:0.06;
+      const ftCA=walking?-legSwing*0.22:0.08;
+      ctx.save();ctx.translate(6,-80);ctx.rotate(ftTA);
+      dlLimb(14,10,40,'th');
+      ctx.fillStyle='rgba(0,0,0,0.11)';
+      ctx.beginPath();ctx.moveTo(3,0);ctx.lineTo(6,0);ctx.lineTo(6,40);ctx.lineTo(3,40);ctx.closePath();ctx.fill();
+      ctx.save();ctx.translate(0,40);dlKnee();
+      ctx.rotate(ftCA);dlLimb(10,7,28,'ca');
+      ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
+      ctx.restore();ctx.restore();
     }
 
-    // ── Coat ──
+    // ── Coat ──────────────────────────────────────────────────
     ctx.save();ctx.translate(0,bob);
-    const cG=ctx.createLinearGradient(-22,-150,22,-75);
-    cG.addColorStop(0,'#990000');cG.addColorStop(0.5,'#880000');cG.addColorStop(1,'#660000');
-    ctx.fillStyle=cG;ctx.fillRect(-22,-150,44,75);
-    // Coat lapels
-    ctx.fillStyle='rgba(0,0,0,0.18)';
-    ctx.beginPath();ctx.moveTo(-22,-150);ctx.lineTo(0,-115);ctx.lineTo(-22,-95);ctx.closePath();ctx.fill();
-    ctx.beginPath();ctx.moveTo(22,-150);ctx.lineTo(0,-115);ctx.lineTo(22,-95);ctx.closePath();ctx.fill();
+    const cG=ctx.createLinearGradient(-24,-150,24,-75);
+    cG.addColorStop(0,'#9A0000');cG.addColorStop(0.45,'#880000');cG.addColorStop(1,'#660000');
+    ctx.fillStyle=cG;
+    ctx.beginPath();ctx.moveTo(-24,-150);ctx.lineTo(24,-150);ctx.lineTo(20,-75);ctx.lineTo(-20,-75);ctx.closePath();ctx.fill();
+    // Lapels (dark shadow V)
+    ctx.fillStyle='rgba(0,0,0,0.20)';
+    ctx.beginPath();ctx.moveTo(-24,-150);ctx.lineTo(0,-115);ctx.lineTo(-22,-95);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(24,-150);ctx.lineTo(0,-115);ctx.lineTo(22,-95);ctx.closePath();ctx.fill();
     // Gold buttons
     ctx.fillStyle='#FFDD00';
     for(let i=0;i<4;i++){
       ctx.beginPath();ctx.arc(0,-145+i*16,3.5,0,Math.PI*2);ctx.fill();
       ctx.strokeStyle='#CC9900';ctx.lineWidth=0.8;ctx.stroke();
     }
-    // Coat tails (flared bottom)
-    ctx.fillStyle='#770000';
-    ctx.beginPath();ctx.moveTo(-22,-77);ctx.lineTo(-38,-44);ctx.lineTo(-22,-44);ctx.closePath();ctx.fill();
-    ctx.beginPath();ctx.moveTo(22,-77);ctx.lineTo(38,-44);ctx.lineTo(22,-44);ctx.closePath();ctx.fill();
+    // Coat tails (flared bottom, tapered trapezoids)
+    const tailG=ctx.createLinearGradient(-40,-52,40,-52);
+    tailG.addColorStop(0,'#4A0000');tailG.addColorStop(0.5,'#6A0000');tailG.addColorStop(1,'#4A0000');
+    ctx.fillStyle=tailG;
+    ctx.beginPath();ctx.moveTo(-20,-77);ctx.lineTo(-40,-44);ctx.lineTo(-20,-44);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(20,-77);ctx.lineTo(40,-44);ctx.lineTo(20,-44);ctx.closePath();ctx.fill();
+    // Gold trim on tail edges
+    ctx.strokeStyle='rgba(200,160,0,0.42)';ctx.lineWidth=0.8;
+    ctx.beginPath();ctx.moveTo(-20,-77);ctx.lineTo(-40,-44);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(20,-77);ctx.lineTo(40,-44);ctx.stroke();
     // Cape / inner shadow
-    ctx.fillStyle='rgba(20,0,0,0.82)';
+    ctx.fillStyle='rgba(15,0,0,0.82)';
     ctx.beginPath();ctx.moveTo(-22,-132);ctx.lineTo(-48,-52);ctx.lineTo(48,-52);ctx.lineTo(22,-132);ctx.closePath();ctx.fill();
-    // Coat highlight
-    ctx.fillStyle='rgba(255,40,40,0.10)';ctx.fillRect(-22,-150,9,75);
-    // Epaulette shoulder pads (gold trim)
-    for(const ex of[-22,22]){
+    // Coat highlight (left edge)
+    ctx.fillStyle='rgba(255,40,40,0.08)';
+    ctx.beginPath();ctx.moveTo(-24,-150);ctx.lineTo(-16,-150);ctx.lineTo(-12,-75);ctx.lineTo(-20,-75);ctx.closePath();ctx.fill();
+    // Gold trim lines on coat edges
+    ctx.strokeStyle='rgba(200,160,0,0.40)';ctx.lineWidth=0.4;
+    ctx.beginPath();ctx.moveTo(-24,-150);ctx.lineTo(-20,-75);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(24,-150);ctx.lineTo(20,-75);ctx.stroke();
+    // Epaulettes (gold shoulder pads)
+    for(const ex of[-24,24]){
       const es=ex<0?1:-1;
-      ctx.fillStyle='#AA8800';ctx.fillRect(ex-es*10,-153,10*es,10);
-      ctx.fillStyle='#FFDD00';ctx.fillRect(ex-es*10,-153,10*es,3);
+      ctx.fillStyle='#AA8800';
+      ctx.beginPath();ctx.moveTo(ex,-153);ctx.lineTo(ex-es*12,-153);ctx.lineTo(ex-es*10,-143);ctx.lineTo(ex,-143);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#FFDD00';
+      ctx.beginPath();ctx.moveTo(ex,-153);ctx.lineTo(ex-es*12,-153);ctx.lineTo(ex-es*12,-150);ctx.lineTo(ex,-150);ctx.closePath();ctx.fill();
       ctx.strokeStyle='#CC9900';ctx.lineWidth=0.5;
-      for(let ri=0;ri<4;ri++){ctx.beginPath();ctx.moveTo(ex-es*8+ri*es*2,-153);ctx.lineTo(ex-es*8+ri*es*2,-143);ctx.stroke();}
+      for(let ri=0;ri<4;ri++){ctx.beginPath();ctx.moveTo(ex-es*(2+ri*2.5),-153);ctx.lineTo(ex-es*(2+ri*2.5),-143);ctx.stroke();}
     }
-    // Chest armor engraving (skull motif in fine lines)
-    ctx.strokeStyle='rgba(180,20,20,0.35)';ctx.lineWidth=0.3;
+    // Chest armor engraving (skull motif)
+    ctx.strokeStyle='rgba(180,20,20,0.38)';ctx.lineWidth=0.35;
     ctx.beginPath();ctx.arc(0,-128,10,0,Math.PI*2);ctx.stroke();
     ctx.beginPath();ctx.arc(-4,-130,3,0,Math.PI*2);ctx.stroke();
     ctx.beginPath();ctx.arc(4,-130,3,0,Math.PI*2);ctx.stroke();
     ctx.beginPath();ctx.moveTo(-5,-123);ctx.lineTo(-5,-120);ctx.lineTo(5,-120);ctx.lineTo(5,-123);ctx.stroke();
-    // Gold trim lines on coat edges
-    ctx.strokeStyle='rgba(200,160,0,0.45)';ctx.lineWidth=0.4;
-    ctx.beginPath();ctx.moveTo(-22,-150);ctx.lineTo(-22,-75);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(22,-150);ctx.lineTo(22,-75);ctx.stroke();
     ctx.restore();
 
-    // ── Back arm (HP psycho cross or low guard) ──
+    // ── Back arm ──────────────────────────────────────────────
     ctx.save();ctx.translate(-22,-130+bob);
     if(hpunchExt>0){
-      const dlBaSlGh=ctx.createLinearGradient(-9,0,9,0);dlBaSlGh.addColorStop(0,'#660000');dlBaSlGh.addColorStop(0.5,'#880000');dlBaSlGh.addColorStop(1,'#660000');
-      ctx.fillStyle=dlBaSlGh;ctx.fillRect(-9,-5,18,28);
-      ctx.fillStyle='rgba(255,40,40,0.12)';ctx.fillRect(-9,-5,5,28);
-      ctx.save();ctx.translate(0,22);
-      ctx.fillStyle='#550000';ctx.beginPath();ctx.arc(0,0,5,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='rgba(200,60,60,0.25)';ctx.beginPath();ctx.arc(-1,-1,2,0,Math.PI*2);ctx.fill();
+      dlSleeve(18,14,28);
+      ctx.save();ctx.translate(0,22);dlElbow();
       ctx.rotate(-Math.PI/2);
-      const dlBaFaGh=ctx.createLinearGradient(-8,0,8,0);dlBaFaGh.addColorStop(0,'#9A5858');dlBaFaGh.addColorStop(0.5,'#B87878');dlBaFaGh.addColorStop(1,'#9A5858');
-      ctx.fillStyle=dlBaFaGh;ctx.fillRect(-8,0,16,22+hpunchExt);
-      ctx.fillStyle='rgba(255,180,180,0.12)';ctx.fillRect(-8,0,4,22+hpunchExt);
-      ctx.fillStyle='#A06060';ctx.fillRect(-8,20+hpunchExt,16,14);
+      dlForearm(hpunchExt);dlFist(hpunchExt);
       if(hpunchExt>14){
         ctx.save();ctx.translate(0,27+hpunchExt);
         ctx.fillStyle='rgba(200,40,255,0.55)';ctx.beginPath();ctx.arc(0,0,8+hpunchExt*0.18,0,Math.PI*2);ctx.fill();
@@ -2481,64 +2486,36 @@ const R={
       ctx.restore();
     }else{
       ctx.rotate(armSwing*0.18);
-      const dlBaSlG=ctx.createLinearGradient(-9,0,9,0);dlBaSlG.addColorStop(0,'#660000');dlBaSlG.addColorStop(0.5,'#880000');dlBaSlG.addColorStop(1,'#660000');
-      ctx.fillStyle=dlBaSlG;ctx.fillRect(-9,-5,18,28);
-      ctx.fillStyle='rgba(255,40,40,0.12)';ctx.fillRect(-9,-5,5,28);
-      ctx.save();ctx.translate(0,22);
-      ctx.fillStyle='#550000';ctx.beginPath();ctx.arc(0,0,5,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='rgba(200,60,60,0.25)';ctx.beginPath();ctx.arc(-1,-1,2,0,Math.PI*2);ctx.fill();
-      const dlBaFaG=ctx.createLinearGradient(-8,0,8,0);dlBaFaG.addColorStop(0,'#9A5858');dlBaFaG.addColorStop(0.5,'#B87878');dlBaFaG.addColorStop(1,'#9A5858');
-      ctx.fillStyle=dlBaFaG;ctx.fillRect(-8,0,16,22);
-      ctx.fillStyle='rgba(255,180,180,0.12)';ctx.fillRect(-8,0,4,22);
-      ctx.fillStyle='#A06060';ctx.fillRect(-8,20,16,14);
+      dlSleeve(18,14,28);
+      ctx.save();ctx.translate(0,22);dlElbow();
+      dlForearm(0);dlFist(0);
       ctx.restore();
     }
     ctx.restore();
 
-    // ── Front arm (raised imperial command or attack) ──
+    // ── Front arm ─────────────────────────────────────────────
     ctx.save();ctx.translate(22,-130+bob);
     ctx.rotate(armRot);
     ctx.rotate(-armSwing*0.18);
     if(inAtk&&!isHP){
-      // coat sleeve
-      const dlFaSlG=ctx.createLinearGradient(-9,0,9,0);dlFaSlG.addColorStop(0,'#660000');dlFaSlG.addColorStop(0.5,'#880000');dlFaSlG.addColorStop(1,'#660000');
-      ctx.fillStyle=dlFaSlG;ctx.fillRect(-9,-5,18,22);
-      ctx.fillStyle='rgba(255,40,40,0.12)';ctx.fillRect(-9,-5,5,22);
-      // elbow joint
-      ctx.save();ctx.translate(0,16);
-      ctx.fillStyle='#550000';ctx.beginPath();ctx.arc(0,0,5,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='rgba(200,60,60,0.25)';ctx.beginPath();ctx.arc(-1,-1,2,0,Math.PI*2);ctx.fill();
+      dlSleeve(18,14,22);
+      ctx.save();ctx.translate(0,16);dlElbow();
       ctx.rotate(-Math.PI/2);
-      // forearm
-      const dlFaFaG=ctx.createLinearGradient(-7,0,7,0);dlFaFaG.addColorStop(0,'#9A5858');dlFaFaG.addColorStop(0.5,'#B87878');dlFaFaG.addColorStop(1,'#9A5858');
-      ctx.fillStyle=dlFaFaG;ctx.fillRect(-7,0,14,26+punchExt);
-      ctx.fillStyle='rgba(255,180,180,0.12)';ctx.fillRect(-7,0,4,26+punchExt);
-      ctx.fillStyle='#A06060';ctx.fillRect(-8,24+punchExt,16,14);
+      dlForearm(punchExt);dlFist(punchExt);
       if(psycho){
         ctx.save();
         ctx.shadowColor='#AA00FF';ctx.shadowBlur=24;
-        const pG=ctx.createRadialGradient(0,24+punchExt+7,4,0,24+punchExt+7,18);
+        const pG=ctx.createRadialGradient(0,22+punchExt+7,4,0,22+punchExt+7,18);
         pG.addColorStop(0,'rgba(220,100,255,0.95)');pG.addColorStop(1,'rgba(100,0,200,0)');
-        ctx.fillStyle=pG;ctx.beginPath();ctx.arc(0,24+punchExt+7,18,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle=pG;ctx.beginPath();ctx.arc(0,22+punchExt+7,18,0,Math.PI*2);ctx.fill();
         ctx.shadowBlur=0;ctx.restore();
       }
       ctx.restore();
-    } else {
-      // Idle: arm raised upward in commanding pose with resting psycho energy
+    }else{
       ctx.save();ctx.rotate(-0.4);
-      // coat sleeve
-      const dlFaSlGi=ctx.createLinearGradient(-9,0,9,0);dlFaSlGi.addColorStop(0,'#660000');dlFaSlGi.addColorStop(0.5,'#880000');dlFaSlGi.addColorStop(1,'#660000');
-      ctx.fillStyle=dlFaSlGi;ctx.fillRect(-9,-5,18,26);
-      ctx.fillStyle='rgba(255,40,40,0.12)';ctx.fillRect(-9,-5,5,26);
-      // elbow joint
-      ctx.save();ctx.translate(0,20);
-      ctx.fillStyle='#550000';ctx.beginPath();ctx.arc(0,0,5,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='rgba(200,60,60,0.25)';ctx.beginPath();ctx.arc(-1,-1,2,0,Math.PI*2);ctx.fill();
-      // forearm
-      const dlFaFaGi=ctx.createLinearGradient(-8,0,8,0);dlFaFaGi.addColorStop(0,'#9A5858');dlFaFaGi.addColorStop(0.5,'#B87878');dlFaFaGi.addColorStop(1,'#9A5858');
-      ctx.fillStyle=dlFaFaGi;ctx.fillRect(-8,0,16,14);
-      ctx.fillStyle='rgba(255,180,180,0.12)';ctx.fillRect(-8,0,4,14);
-      ctx.fillStyle='#A06060';ctx.fillRect(-8,12,16,12);
+      dlSleeve(18,14,26);
+      ctx.save();ctx.translate(0,20);dlElbow();
+      dlForearm(-8);dlFist(-8);
       ctx.restore();
       const idleE=0.25+Math.sin(fr*0.12)*0.15;
       ctx.save();ctx.shadowColor='#AA00FF';ctx.shadowBlur=14*idleE;
@@ -2549,9 +2526,11 @@ const R={
     }
     ctx.restore();
 
-    // ── Head (side profile - military cap with forward visor, single red eye) ──
+    // ── Head ──────────────────────────────────────────────────
     ctx.save();ctx.translate(4,-163+bob);
-    ctx.fillStyle='#A06060';ctx.fillRect(-5,10,12,14);
+    // Neck (tapered)
+    ctx.fillStyle='#904848';
+    ctx.beginPath();ctx.moveTo(-5,10);ctx.lineTo(7,10);ctx.lineTo(6,22);ctx.lineTo(-5,22);ctx.closePath();ctx.fill();
     const headG=ctx.createRadialGradient(-4,-5,2,1,2,20);
     headG.addColorStop(0,'#C88888');headG.addColorStop(0.6,'#B87878');headG.addColorStop(1,'#945858');
     ctx.fillStyle=headG;
@@ -2561,15 +2540,28 @@ const R={
     ctx.lineTo(16,2);ctx.lineTo(14,14);
     ctx.quadraticCurveTo(4,20,-10,16);
     ctx.closePath();ctx.fill();
-    // Military cap (side profile - visor extends forward toward opponent)
-    const capG=ctx.createLinearGradient(-22,-22,22,-22);
-    capG.addColorStop(0,'#770000');capG.addColorStop(0.5,'#990000');capG.addColorStop(1,'#660000');
-    ctx.fillStyle=capG;ctx.fillRect(-20,-22,40,20);ctx.fillRect(-24,-26,48,7);ctx.fillRect(-26,-30,52,6);
-    // Cap visor pointing forward (+x)
-    ctx.fillStyle='#550000';
-    ctx.beginPath();ctx.moveTo(16,-18);ctx.lineTo(30,-18);ctx.lineTo(28,-12);ctx.lineTo(16,-12);ctx.closePath();ctx.fill();
-    // Gold star on front of cap
-    ctx.save();ctx.translate(8,-18);ctx.fillStyle='#FFDD00';
+    // Cheek shadow
+    ctx.fillStyle='rgba(100,40,40,0.20)';ctx.beginPath();ctx.ellipse(5,5,9,5,0.1,0,Math.PI*2);ctx.fill();
+    // Ear
+    ctx.fillStyle='#A06060';ctx.beginPath();ctx.ellipse(-12,4,5,6,0.1,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#7A3030';ctx.lineWidth=0.8;ctx.beginPath();ctx.ellipse(-12,4,2.5,4,0.1,0,Math.PI);ctx.stroke();
+    // Military cap (side profile — layers, visor forward)
+    const capG=ctx.createLinearGradient(-22,-30,22,-14);
+    capG.addColorStop(0,'#6A0000');capG.addColorStop(0.5,'#990000');capG.addColorStop(1,'#5A0000');
+    ctx.fillStyle=capG;
+    ctx.beginPath();ctx.moveTo(-22,-22);ctx.lineTo(16,-22);ctx.lineTo(18,-14);ctx.lineTo(-22,-14);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(-24,-26);ctx.lineTo(16,-26);ctx.lineTo(16,-22);ctx.lineTo(-24,-22);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#770000';
+    ctx.beginPath();ctx.moveTo(-22,-26);ctx.quadraticCurveTo(0,-38,14,-26);ctx.lineTo(-22,-26);ctx.closePath();ctx.fill();
+    // Cap visor (pointing toward opponent +x)
+    ctx.fillStyle='#440000';
+    ctx.beginPath();ctx.moveTo(16,-22);ctx.lineTo(30,-20);ctx.lineTo(28,-14);ctx.lineTo(16,-14);ctx.closePath();ctx.fill();
+    ctx.strokeStyle='rgba(150,0,0,0.30)';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(17,-20);ctx.lineTo(29,-18);ctx.stroke();
+    // Gold cap band
+    ctx.fillStyle='#FFDD00';
+    ctx.beginPath();ctx.moveTo(-22,-22);ctx.lineTo(16,-22);ctx.lineTo(16,-20);ctx.lineTo(-22,-20);ctx.closePath();ctx.fill();
+    // Gold star on cap
+    ctx.save();ctx.translate(8,-19);ctx.fillStyle='#FFDD00';
     ctx.beginPath();
     for(let i=0;i<5;i++){
       const a=i/5*Math.PI*2-Math.PI/2,ar=a+Math.PI/5;
@@ -2577,17 +2569,17 @@ const R={
       ctx.lineTo(Math.cos(ar)*2.5,Math.sin(ar)*2.5);
     }
     ctx.closePath();ctx.fill();ctx.restore();
-    // Ear (back of head)
-    ctx.fillStyle='#A06060';ctx.beginPath();ctx.ellipse(-12,4,5,6,0.1,0,Math.PI*2);ctx.fill();
-    // Single stern brow (forward side)
-    ctx.fillStyle='#550000';
-    ctx.save();ctx.translate(6,-5);ctx.rotate(-0.2);ctx.fillRect(-7,0,12,3);ctx.restore();
-    // Single glowing red eye (profile, forward side)
-    ctx.save();ctx.shadowColor='#FF0000';ctx.shadowBlur=14;
+    // Stern brow (tapered polygon)
+    ctx.fillStyle='#440000';
+    ctx.save();ctx.translate(6,-5);ctx.rotate(-0.2);
+    ctx.beginPath();ctx.moveTo(-7,0);ctx.lineTo(5,0);ctx.lineTo(4,3);ctx.lineTo(-7,3);ctx.closePath();ctx.fill();
+    ctx.restore();
+    // Single glowing red eye
+    ctx.save();ctx.shadowColor='#FF0000';ctx.shadowBlur=16;
     ctx.fillStyle='#FF2200';ctx.beginPath();ctx.ellipse(7,0,5.5,4,0,0,Math.PI*2);ctx.fill();
     ctx.shadowBlur=0;ctx.restore();
     ctx.fillStyle='#FF8888';ctx.beginPath();ctx.ellipse(7,-0.5,2.5,1.8,0,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='rgba(255,255,255,0.4)';ctx.beginPath();ctx.arc(8,-1.5,1,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.40)';ctx.beginPath();ctx.arc(8,-1.5,1,0,Math.PI*2);ctx.fill();
     // Nose (side, pointing forward)
     ctx.strokeStyle='#7A3030';ctx.lineWidth=1.5;
     ctx.beginPath();ctx.moveTo(11,-1);ctx.lineTo(16,4);ctx.stroke();
