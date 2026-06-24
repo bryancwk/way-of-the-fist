@@ -207,6 +207,8 @@ class Fighter{
 
     if(this.trySpec(pp,pk,keys,jp,fr))return;
 
+    const dn=keys.has('ArrowDown');
+    this.crouch=dn&&this.ground;
     if(!this.ground){
       if(pp){this.startMv(this.def.moves.jp);return;}
       if(pk){this.startMv(this.def.moves.jk);return;}
@@ -222,8 +224,7 @@ class Fighter{
 
     const fwdKey=fr?'ArrowRight':'ArrowLeft',bkKey=fr?'ArrowLeft':'ArrowRight';
     const fwd=keys.has(fwdKey),bk=keys.has(bkKey);
-    const up=keys.has('ArrowUp'),dn=keys.has('ArrowDown');
-    this.crouch=dn&&this.ground;
+    const up=keys.has('ArrowUp');
     this.block=bk&&this.ground;
     if(up&&this.ground){this.vy=this.def.stats.jf;this.ground=false;this.crouch=false;}
     if(!this.crouch){
@@ -1363,7 +1364,10 @@ const R={
     const armSwing=walking?Math.sin(fr*1.5):0;
     const isHP=isAc&&f.md&&f.md===f.def.moves.hp;
     const isHK=isAc&&f.md&&f.md===f.def.moves.hk;
-    const punchExt=isAc&&f.md&&f.md===f.def.moves.lp?Math.min(mf*9,38):0;
+    const isClp=isAc&&f.md&&f.md===f.def.moves.clp;
+    const isChk=isAc&&f.md&&f.md===f.def.moves.chk;
+    const cr=f.crouch?1:0;const crH=cr*26;
+    const punchExt=isAc&&f.md&&(f.md===f.def.moves.lp||f.md===f.def.moves.clp)?Math.min(mf*9,38):0;
     const hpunchExt=isHP?Math.min(mf*9,44):0;
     const kickRaise=isAc&&f.md&&f.md===f.def.moves.lk?Math.min(mf*0.14,0.85):0;
     const hkickRaise=isHK?Math.min(mf*0.14,0.80):0;
@@ -1458,22 +1462,30 @@ const R={
       ctx.save();ctx.translate(0,24);girBoot();ctx.restore();
       ctx.restore();ctx.restore();
     }else{
-      const bkTA=walking?-legSwing*0.30:-0.06;
-      const bkCA=walking? legSwing*0.22: 0.12;
-      ctx.save();ctx.translate(-12,-78);ctx.rotate(bkTA);
-      giLimb(20,14,36);
-      ctx.fillStyle='rgba(0,0,0,0.07)';
-      ctx.beginPath();ctx.moveTo(5,0);ctx.lineTo(7,0);ctx.lineTo(5,36);ctx.lineTo(4,36);ctx.closePath();ctx.fill();
-      ctx.strokeStyle='rgba(160,160,160,0.38)';ctx.lineWidth=0.32;
-      ctx.beginPath();ctx.moveTo(-5,8);ctx.lineTo(-4,22);ctx.stroke();
-      ctx.save();ctx.translate(0,36);kneeCap();
-      ctx.rotate(bkCA);
-      giLimb(14,10,24);
-      // calf muscle bulge on back edge
-      ctx.fillStyle='rgba(188,188,188,0.28)';
-      ctx.beginPath();ctx.moveTo(-7,0);ctx.bezierCurveTo(-11,8,-12,17,-5,24);ctx.lineTo(-6,24);ctx.lineTo(-6,0);ctx.closePath();ctx.fill();
-      ctx.save();ctx.translate(0,24);girBoot();ctx.restore();
-      ctx.restore();ctx.restore();
+      if(f.crouch){
+        ctx.save();ctx.translate(-12,-78+crH);ctx.rotate(0.5);
+        giLimb(20,14,36);
+        ctx.save();ctx.translate(0,36);kneeCap();
+        ctx.rotate(-0.95);giLimb(14,10,24);
+        ctx.save();ctx.translate(0,24);girBoot();ctx.restore();
+        ctx.restore();ctx.restore();
+      }else{
+        const bkTA=walking?-legSwing*0.30:-0.06;
+        const bkCA=walking? legSwing*0.22: 0.12;
+        ctx.save();ctx.translate(-12,-78);ctx.rotate(bkTA);
+        giLimb(20,14,36);
+        ctx.fillStyle='rgba(0,0,0,0.07)';
+        ctx.beginPath();ctx.moveTo(5,0);ctx.lineTo(7,0);ctx.lineTo(5,36);ctx.lineTo(4,36);ctx.closePath();ctx.fill();
+        ctx.strokeStyle='rgba(160,160,160,0.38)';ctx.lineWidth=0.32;
+        ctx.beginPath();ctx.moveTo(-5,8);ctx.lineTo(-4,22);ctx.stroke();
+        ctx.save();ctx.translate(0,36);kneeCap();
+        ctx.rotate(bkCA);
+        giLimb(14,10,24);
+        ctx.fillStyle='rgba(188,188,188,0.28)';
+        ctx.beginPath();ctx.moveTo(-7,0);ctx.bezierCurveTo(-11,8,-12,17,-5,24);ctx.lineTo(-6,24);ctx.lineTo(-6,0);ctx.closePath();ctx.fill();
+        ctx.save();ctx.translate(0,24);girBoot();ctx.restore();
+        ctx.restore();ctx.restore();
+      }
     }
 
     // ── Front leg ─────────────────────────────────────────────
@@ -1502,18 +1514,36 @@ const R={
       ctx.save();ctx.translate(0,24);girBoot();ctx.restore();
       ctx.restore();ctx.restore();
     }else{
-      const ftTA=walking? legSwing*0.30: 0.06;
-      const ftCA=walking?-legSwing*0.22: 0.08;
-      ctx.save();ctx.translate(12,-78);ctx.rotate(ftTA);
-      giLimb(20,14,36);
-      ctx.fillStyle='rgba(0,0,0,0.08)';
-      ctx.beginPath();ctx.moveTo(4,0);ctx.lineTo(7,0);ctx.lineTo(7,36);ctx.lineTo(4,36);ctx.closePath();ctx.fill();
-      ctx.save();ctx.translate(0,36);kneeCap();
-      ctx.rotate(ftCA);giLimb(14,10,24);
-      ctx.save();ctx.translate(0,24);girBoot();ctx.restore();
-      ctx.restore();ctx.restore();
+      if(f.crouch&&isChk){
+        const sw=Math.min(mf*0.16,1.0);
+        ctx.save();ctx.translate(12,-78+crH);ctx.rotate(0.5-2.05*sw);
+        giLimb(20,14,36);
+        ctx.save();ctx.translate(0,36);kneeCap();
+        ctx.rotate(-0.95+sw);giLimb(14,10,24);
+        ctx.save();ctx.translate(0,24);girBoot();ctx.restore();
+        ctx.restore();ctx.restore();
+      }else if(f.crouch){
+        ctx.save();ctx.translate(12,-78+crH);ctx.rotate(0.5);
+        giLimb(20,14,36);
+        ctx.save();ctx.translate(0,36);kneeCap();
+        ctx.rotate(-0.95);giLimb(14,10,24);
+        ctx.save();ctx.translate(0,24);girBoot();ctx.restore();
+        ctx.restore();ctx.restore();
+      }else{
+        const ftTA=walking? legSwing*0.30: 0.06;
+        const ftCA=walking?-legSwing*0.22: 0.08;
+        ctx.save();ctx.translate(12,-78);ctx.rotate(ftTA);
+        giLimb(20,14,36);
+        ctx.fillStyle='rgba(0,0,0,0.08)';
+        ctx.beginPath();ctx.moveTo(4,0);ctx.lineTo(7,0);ctx.lineTo(7,36);ctx.lineTo(4,36);ctx.closePath();ctx.fill();
+        ctx.save();ctx.translate(0,36);kneeCap();
+        ctx.rotate(ftCA);giLimb(14,10,24);
+        ctx.save();ctx.translate(0,24);girBoot();ctx.restore();
+        ctx.restore();ctx.restore();
+      }
     }
 
+    ctx.save();ctx.translate(0,crH);
     // ── Torso (gi) ──────────────────────────────────────────────
     ctx.save();ctx.translate(0,bob);
     // Trapezoid gi body: wide shoulders, narrow waist
@@ -1709,6 +1739,7 @@ const R={
     ctx.fillStyle='rgba(140,70,20,0.14)';
     ctx.beginPath();ctx.ellipse(-3,4,6,3,0.2,0,Math.PI*2);ctx.fill();
     ctx.restore();
+    ctx.restore();
     if(hurricane){
       ctx.save();ctx.globalAlpha=0.28;ctx.strokeStyle='#44AAFF';ctx.lineWidth=3;
       for(let i=0;i<3;i++){
@@ -1730,7 +1761,10 @@ const R={
     const isAc=inAtk&&mp==='ac';
     const isHP=isAc&&f.md&&f.md===f.def.moves.hp;
     const isHK=isAc&&f.md&&f.md===f.def.moves.hk;
-    const punchExt=isAc&&f.md&&f.md===f.def.moves.lp?Math.min(mf*10,38):0;
+    const isClp=isAc&&f.md&&f.md===f.def.moves.clp;
+    const isChk=isAc&&f.md&&f.md===f.def.moves.chk;
+    const cr=f.crouch?1:0;const crH=cr*26;
+    const punchExt=isAc&&f.md&&(f.md===f.def.moves.lp||f.md===f.def.moves.clp)?Math.min(mf*10,38):0;
     const hpunchExt=isHP?Math.min(mf*10,44):0;
     const kickRaise=isAc&&f.md&&f.md===f.def.moves.lk?Math.min(mf*0.16,1.0):0;
     const hkickRaise=isHK?Math.min(mf*0.16,0.82):0;
@@ -1834,15 +1868,32 @@ const R={
       ctx.save();ctx.translate(0,22);chFoot();ctx.restore();
       ctx.restore();ctx.restore();
     }else{
-      const ftTA=walking?legAlt*0.30:0.06;
-      const ftCA=walking?-legAlt*0.22:0.08;
-      ctx.save();ctx.translate(12,-75);ctx.rotate(ftTA);
-      blLimb(22,16,34,false);
-      ctx.fillStyle='rgba(0,0,0,0.08)';ctx.beginPath();ctx.moveTo(6,0);ctx.lineTo(8,0);ctx.lineTo(7,34);ctx.lineTo(5,34);ctx.closePath();ctx.fill();
-      ctx.save();ctx.translate(0,34);blKnee(false);
-      ctx.rotate(ftCA);chCalf();
-      ctx.save();ctx.translate(0,22);chFoot();ctx.restore();
-      ctx.restore();ctx.restore();
+      if(f.crouch&&isChk){
+        const sw=Math.min(mf*0.16,1.0);
+        ctx.save();ctx.translate(12,-75+crH);ctx.rotate(0.5-2.05*sw);
+        blLimb(22,16,34,false);
+        ctx.save();ctx.translate(0,34);blKnee(false);
+        ctx.rotate(-0.95+sw);chCalf();
+        ctx.save();ctx.translate(0,22);chFoot();ctx.restore();
+        ctx.restore();ctx.restore();
+      }else if(f.crouch){
+        ctx.save();ctx.translate(12,-75+crH);ctx.rotate(0.5);
+        blLimb(22,16,34,false);
+        ctx.save();ctx.translate(0,34);blKnee(false);
+        ctx.rotate(-0.95);chCalf();
+        ctx.save();ctx.translate(0,22);chFoot();ctx.restore();
+        ctx.restore();ctx.restore();
+      }else{
+        const ftTA=walking?legAlt*0.30:0.06;
+        const ftCA=walking?-legAlt*0.22:0.08;
+        ctx.save();ctx.translate(12,-75);ctx.rotate(ftTA);
+        blLimb(22,16,34,false);
+        ctx.fillStyle='rgba(0,0,0,0.08)';ctx.beginPath();ctx.moveTo(6,0);ctx.lineTo(8,0);ctx.lineTo(7,34);ctx.lineTo(5,34);ctx.closePath();ctx.fill();
+        ctx.save();ctx.translate(0,34);blKnee(false);
+        ctx.rotate(ftCA);chCalf();
+        ctx.save();ctx.translate(0,22);chFoot();ctx.restore();
+        ctx.restore();ctx.restore();
+      }
     }
 
     // ── Back leg ──────────────────────────────────────────────
@@ -1871,16 +1922,26 @@ const R={
       ctx.save();ctx.translate(0,22);chFoot();ctx.restore();
       ctx.restore();ctx.restore();
     }else{
-      const bkTA=walking?-legAlt*0.30:-0.06;
-      const bkCA=walking?legAlt*0.22:0.12;
-      ctx.save();ctx.translate(-12,-75);ctx.rotate(bkTA);
-      blLimb(22,16,34,true);
-      ctx.save();ctx.translate(0,34);blKnee(true);
-      ctx.rotate(bkCA);chCalf();
-      ctx.save();ctx.translate(0,22);chFoot();ctx.restore();
-      ctx.restore();ctx.restore();
+      if(f.crouch){
+        ctx.save();ctx.translate(-12,-75+crH);ctx.rotate(0.5);
+        blLimb(22,16,34,true);
+        ctx.save();ctx.translate(0,34);blKnee(true);
+        ctx.rotate(-0.95);chCalf();
+        ctx.save();ctx.translate(0,22);chFoot();ctx.restore();
+        ctx.restore();ctx.restore();
+      }else{
+        const bkTA=walking?-legAlt*0.30:-0.06;
+        const bkCA=walking?legAlt*0.22:0.12;
+        ctx.save();ctx.translate(-12,-75);ctx.rotate(bkTA);
+        blLimb(22,16,34,true);
+        ctx.save();ctx.translate(0,34);blKnee(true);
+        ctx.rotate(bkCA);chCalf();
+        ctx.save();ctx.translate(0,22);chFoot();ctx.restore();
+        ctx.restore();ctx.restore();
+      }
     }
 
+    ctx.save();ctx.translate(0,crH);
     // ── Qipao dress ───────────────────────────────────────────
     ctx.save();ctx.translate(0,bob);
     const qG=ctx.createLinearGradient(-22,-132,22,-74);
@@ -2012,6 +2073,7 @@ const R={
     if(st==='hit'){ctx.beginPath();ctx.arc(5,13,4,0.3,Math.PI-0.3);ctx.stroke();}
     else{ctx.beginPath();ctx.arc(5,12,3.5,-0.8,-Math.PI+0.8,true);ctx.stroke();}
     ctx.restore();
+    ctx.restore();
 
     if(lightning){
       ctx.save();ctx.globalAlpha=0.18+Math.sin(mf*2.2)*0.10;
@@ -2036,7 +2098,10 @@ const R={
     const isAc=inAtk&&mp==='ac';
     const isHP=isAc&&f.md&&f.md===f.def.moves.hp;
     const isHK=isAc&&f.md&&f.md===f.def.moves.hk;
-    const armExt=isAc&&f.md&&f.md===f.def.moves.lp?Math.min(mf*12,46):0;
+    const isClp=isAc&&f.md&&f.md===f.def.moves.clp;
+    const isChk=isAc&&f.md&&f.md===f.def.moves.chk;
+    const cr=f.crouch?1:0;const crH=cr*25;
+    const armExt=isAc&&f.md&&(f.md===f.def.moves.lp||f.md===f.def.moves.clp)?Math.min(mf*12,46):0;
     const harmExt=isHP?Math.min(mf*12,36):0;
     const kickRaise=isAc&&f.md&&f.md===f.def.moves.lk?Math.min(mf*0.14,0.85):0;
     const hkickRaise=isHK?Math.min(mf*0.14,0.80):0;
@@ -2147,15 +2212,24 @@ const R={
       ctx.save();ctx.translate(0,26);aBootFoot();ctx.restore();
       ctx.restore();ctx.restore();
     }else{
-      const aBkTA=walking?-legSwing*0.30:-0.06;
-      const aBkCA=walking?legSwing*0.22:0.12;
-      ctx.save();ctx.translate(-14,-80);ctx.rotate(aBkTA);
-      aShortsLimb(30,22,38,true);
-      ctx.fillStyle='rgba(0,0,0,0.10)';ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(11,0);ctx.lineTo(11,38);ctx.lineTo(8,38);ctx.closePath();ctx.fill();
-      ctx.save();ctx.translate(0,38);aSkinKnee();
-      ctx.rotate(aBkCA);aSkinCalf(22,15,26);
-      ctx.save();ctx.translate(0,26);aBootFoot();ctx.restore();
-      ctx.restore();ctx.restore();
+      if(f.crouch){
+        ctx.save();ctx.translate(-14,-80+crH);ctx.rotate(0.5);
+        aShortsLimb(30,22,38,true);
+        ctx.save();ctx.translate(0,38);aSkinKnee();
+        ctx.rotate(-0.95);aSkinCalf(22,15,26);
+        ctx.save();ctx.translate(0,26);aBootFoot();ctx.restore();
+        ctx.restore();ctx.restore();
+      }else{
+        const aBkTA=walking?-legSwing*0.30:-0.06;
+        const aBkCA=walking?legSwing*0.22:0.12;
+        ctx.save();ctx.translate(-14,-80);ctx.rotate(aBkTA);
+        aShortsLimb(30,22,38,true);
+        ctx.fillStyle='rgba(0,0,0,0.10)';ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(11,0);ctx.lineTo(11,38);ctx.lineTo(8,38);ctx.closePath();ctx.fill();
+        ctx.save();ctx.translate(0,38);aSkinKnee();
+        ctx.rotate(aBkCA);aSkinCalf(22,15,26);
+        ctx.save();ctx.translate(0,26);aBootFoot();ctx.restore();
+        ctx.restore();ctx.restore();
+      }
     }
 
     // ── Front leg ─────────────────────────────────────────────
@@ -2176,16 +2250,34 @@ const R={
       ctx.save();ctx.translate(0,26);aBootFoot();ctx.restore();
       ctx.restore();ctx.restore();
     }else{
-      const aFtTA=walking?legSwing*0.30:0.06;
-      const aFtCA=walking?-legSwing*0.22:0.08;
-      ctx.save();ctx.translate(14,-80);ctx.rotate(aFtTA);
-      aShortsLimb(30,22,38,false);
-      ctx.save();ctx.translate(0,38);aSkinKnee();
-      ctx.rotate(aFtCA);aSkinCalf(22,15,26);
-      ctx.save();ctx.translate(0,26);aBootFoot();ctx.restore();
-      ctx.restore();ctx.restore();
+      if(f.crouch&&isChk){
+        const sw=Math.min(mf*0.16,1.0);
+        ctx.save();ctx.translate(14,-80+crH);ctx.rotate(0.5-2.05*sw);
+        aShortsLimb(30,22,38,false);
+        ctx.save();ctx.translate(0,38);aSkinKnee();
+        ctx.rotate(-0.95+sw);aSkinCalf(22,15,26);
+        ctx.save();ctx.translate(0,26);aBootFoot();ctx.restore();
+        ctx.restore();ctx.restore();
+      }else if(f.crouch){
+        ctx.save();ctx.translate(14,-80+crH);ctx.rotate(0.5);
+        aShortsLimb(30,22,38,false);
+        ctx.save();ctx.translate(0,38);aSkinKnee();
+        ctx.rotate(-0.95);aSkinCalf(22,15,26);
+        ctx.save();ctx.translate(0,26);aBootFoot();ctx.restore();
+        ctx.restore();ctx.restore();
+      }else{
+        const aFtTA=walking?legSwing*0.30:0.06;
+        const aFtCA=walking?-legSwing*0.22:0.08;
+        ctx.save();ctx.translate(14,-80);ctx.rotate(aFtTA);
+        aShortsLimb(30,22,38,false);
+        ctx.save();ctx.translate(0,38);aSkinKnee();
+        ctx.rotate(aFtCA);aSkinCalf(22,15,26);
+        ctx.save();ctx.translate(0,26);aBootFoot();ctx.restore();
+        ctx.restore();ctx.restore();
+      }
     }
 
+    ctx.save();ctx.translate(0,crH);
     // ── Singlet (torso) ───────────────────────────────────────
     ctx.save();ctx.translate(0,bob);
     const singG=ctx.createLinearGradient(-30,-145,30,-78);
@@ -2321,6 +2413,7 @@ const R={
     if(st==='hit'){ctx.beginPath();ctx.arc(8,16,5,0.3,Math.PI-0.3);ctx.stroke();}
     else{ctx.beginPath();ctx.moveTo(5,16);ctx.lineTo(15,17);ctx.stroke();}
     ctx.restore();
+    ctx.restore();
 
     if(lariat){
       ctx.save();ctx.globalAlpha=0.20+Math.sin(lariatAngle)*0.10;
@@ -2347,7 +2440,10 @@ const R={
     const armRot=psycho?-Math.PI/3+Math.min(mf*0.06,0.5):0;
     const isHP=isAc&&f.md&&f.md===f.def.moves.hp;
     const isHK=isAc&&f.md&&f.md===f.def.moves.hk;
-    const punchExt=isAc&&f.md&&f.md===f.def.moves.lp?Math.min(mf*9,36):0;
+    const isClp=isAc&&f.md&&f.md===f.def.moves.clp;
+    const isChk=isAc&&f.md&&f.md===f.def.moves.chk;
+    const cr=f.crouch?1:0;const crH=cr*20;
+    const punchExt=isAc&&f.md&&(f.md===f.def.moves.lp||f.md===f.def.moves.clp)?Math.min(mf*9,36):0;
     const hpunchExt=isHP?Math.min(mf*9,28):0;
     const kickRaise=isAc&&f.md&&f.md===f.def.moves.lk?Math.min(mf*0.14,0.85):0;
     const hkickRaise=isHK?Math.min(mf*0.14,0.80):0;
@@ -2440,14 +2536,23 @@ const R={
       ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
       ctx.restore();ctx.restore();
     }else{
-      const bkTA=walking?-legSwing*0.30:-0.06;
-      const bkCA=walking?legSwing*0.22:0.12;
-      ctx.save();ctx.translate(-11,-80);ctx.rotate(bkTA);
-      dlLimb(14,10,40,'th');
-      ctx.save();ctx.translate(0,40);dlKnee();
-      ctx.rotate(bkCA);dlLimb(10,7,28,'ca');
-      ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
-      ctx.restore();ctx.restore();
+      if(f.crouch){
+        ctx.save();ctx.translate(-11,-80+crH);ctx.rotate(0.5);
+        dlLimb(14,10,40,'th');
+        ctx.save();ctx.translate(0,40);dlKnee();
+        ctx.rotate(-0.95);dlLimb(10,7,28,'ca');
+        ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
+        ctx.restore();ctx.restore();
+      }else{
+        const bkTA=walking?-legSwing*0.30:-0.06;
+        const bkCA=walking?legSwing*0.22:0.12;
+        ctx.save();ctx.translate(-11,-80);ctx.rotate(bkTA);
+        dlLimb(14,10,40,'th');
+        ctx.save();ctx.translate(0,40);dlKnee();
+        ctx.rotate(bkCA);dlLimb(10,7,28,'ca');
+        ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
+        ctx.restore();ctx.restore();
+      }
     }
 
     // ── Front leg ─────────────────────────────────────────────
@@ -2476,18 +2581,36 @@ const R={
       ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
       ctx.restore();ctx.restore();
     }else{
-      const ftTA=walking?legSwing*0.30:0.06;
-      const ftCA=walking?-legSwing*0.22:0.08;
-      ctx.save();ctx.translate(6,-80);ctx.rotate(ftTA);
-      dlLimb(14,10,40,'th');
-      ctx.fillStyle='rgba(0,0,0,0.11)';
-      ctx.beginPath();ctx.moveTo(3,0);ctx.lineTo(6,0);ctx.lineTo(6,40);ctx.lineTo(3,40);ctx.closePath();ctx.fill();
-      ctx.save();ctx.translate(0,40);dlKnee();
-      ctx.rotate(ftCA);dlLimb(10,7,28,'ca');
-      ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
-      ctx.restore();ctx.restore();
+      if(f.crouch&&isChk){
+        const sw=Math.min(mf*0.16,1.0);
+        ctx.save();ctx.translate(6,-80+crH);ctx.rotate(0.5-2.05*sw);
+        dlLimb(14,10,40,'th');
+        ctx.save();ctx.translate(0,40);dlKnee();
+        ctx.rotate(-0.95+sw);dlLimb(10,7,28,'ca');
+        ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
+        ctx.restore();ctx.restore();
+      }else if(f.crouch){
+        ctx.save();ctx.translate(6,-80+crH);ctx.rotate(0.5);
+        dlLimb(14,10,40,'th');
+        ctx.save();ctx.translate(0,40);dlKnee();
+        ctx.rotate(-0.95);dlLimb(10,7,28,'ca');
+        ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
+        ctx.restore();ctx.restore();
+      }else{
+        const ftTA=walking?legSwing*0.30:0.06;
+        const ftCA=walking?-legSwing*0.22:0.08;
+        ctx.save();ctx.translate(6,-80);ctx.rotate(ftTA);
+        dlLimb(14,10,40,'th');
+        ctx.fillStyle='rgba(0,0,0,0.11)';
+        ctx.beginPath();ctx.moveTo(3,0);ctx.lineTo(6,0);ctx.lineTo(6,40);ctx.lineTo(3,40);ctx.closePath();ctx.fill();
+        ctx.save();ctx.translate(0,40);dlKnee();
+        ctx.rotate(ftCA);dlLimb(10,7,28,'ca');
+        ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
+        ctx.restore();ctx.restore();
+      }
     }
 
+    ctx.save();ctx.translate(0,crH);
     // ── Coat ──────────────────────────────────────────────────
     ctx.save();ctx.translate(0,bob);
     const cG=ctx.createLinearGradient(-24,-150,24,-75);
@@ -2660,6 +2783,7 @@ const R={
     ctx.strokeStyle='#6A2020';ctx.lineWidth=1.5;
     if(st==='hit'){ctx.beginPath();ctx.arc(7,14,4,0.3,Math.PI-0.3);ctx.stroke();}
     else{ctx.beginPath();ctx.moveTo(3,12);ctx.lineTo(12,11);ctx.stroke();}
+    ctx.restore();
     ctx.restore();
     if(scissorK){
       ctx.save();ctx.globalAlpha=0.22+Math.sin(mf*1.8)*0.10;
