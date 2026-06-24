@@ -1367,6 +1367,8 @@ const R={
     const hpunchExt=isHP?Math.min(mf*9,44):0;
     const kickRaise=isAc&&f.md&&f.md===f.def.moves.lk?Math.min(mf*0.14,0.85):0;
     const hkickRaise=isHK?Math.min(mf*0.14,0.80):0;
+    const isJK=isAc&&f.md&&f.md===f.def.moves.jk;
+    const jkickRaise=isJK?Math.min(mf*0.17,1.1):0;
     const hurricane=st==='spec'&&mp==='ac'&&f.md&&f.md.id==='hurricane';
     const hurPh=hurricane&&(mf%6)<3;
 
@@ -1447,6 +1449,14 @@ const R={
       ctx.rotate(1.4*(1-kr));giLimb(14,10,24);
       ctx.save();ctx.translate(0,24);girBoot();ctx.restore();
       ctx.restore();ctx.restore();
+    }else if(jkickRaise>0){
+      const kr=Math.min(jkickRaise/1.1,1.0);
+      ctx.save();ctx.translate(-12,-78);ctx.rotate(0.2+0.4*kr);
+      giLimb(20,14,36);
+      ctx.save();ctx.translate(0,36);kneeCap();
+      ctx.rotate(0.5+0.3*kr);giLimb(14,10,24);
+      ctx.save();ctx.translate(0,24);girBoot();ctx.restore();
+      ctx.restore();ctx.restore();
     }else{
       const bkTA=walking?-legSwing*0.30:-0.06;
       const bkCA=walking? legSwing*0.22: 0.12;
@@ -1481,6 +1491,14 @@ const R={
       giLimb(20,14,36);
       ctx.save();ctx.translate(0,36);kneeCap();
       ctx.rotate(1.4*(1-kr));giLimb(14,10,24);
+      ctx.save();ctx.translate(0,24);girBoot();ctx.restore();
+      ctx.restore();ctx.restore();
+    }else if(jkickRaise>0){
+      const kr=Math.min(jkickRaise/1.1,1.0);
+      ctx.save();ctx.translate(12,-78);ctx.rotate(-1.5*kr);
+      giLimb(20,14,36);
+      ctx.save();ctx.translate(0,36);kneeCap();
+      ctx.rotate(1.2*(1-kr));giLimb(14,10,24);
       ctx.save();ctx.translate(0,24);girBoot();ctx.restore();
       ctx.restore();ctx.restore();
     }else{
@@ -1716,6 +1734,8 @@ const R={
     const hpunchExt=isHP?Math.min(mf*10,44):0;
     const kickRaise=isAc&&f.md&&f.md===f.def.moves.lk?Math.min(mf*0.16,1.0):0;
     const hkickRaise=isHK?Math.min(mf*0.16,0.82):0;
+    const isJK=isAc&&f.md&&f.md===f.def.moves.jk;
+    const jkickRaise=isJK?Math.min(mf*0.17,1.1):0;
     const legAlt=walking?Math.sin(fr*1.5):0;
     const armSwing=walking?Math.sin(fr*1.5):0;
     const lightning=st==='spec'&&mp==='ac'&&f.md&&f.md.id==='lightning';
@@ -1805,6 +1825,14 @@ const R={
       ctx.rotate(1.4*(1-kr));chCalf();
       ctx.save();ctx.translate(0,22);chFoot();ctx.restore();
       ctx.restore();ctx.restore();
+    }else if(jkickRaise>0){
+      const kr=Math.min(jkickRaise/1.1,1.0);
+      ctx.save();ctx.translate(12,-75);ctx.rotate(-1.5*kr);
+      blLimb(22,16,34,false);
+      ctx.save();ctx.translate(0,34);blKnee(false);
+      ctx.rotate(1.2*(1-kr));chCalf();
+      ctx.save();ctx.translate(0,22);chFoot();ctx.restore();
+      ctx.restore();ctx.restore();
     }else{
       const ftTA=walking?legAlt*0.30:0.06;
       const ftCA=walking?-legAlt*0.22:0.08;
@@ -1832,6 +1860,14 @@ const R={
       blLimb(22,16,34,true);
       ctx.save();ctx.translate(0,34);blKnee(true);
       ctx.rotate(1.4*(1-kr));chCalf();
+      ctx.save();ctx.translate(0,22);chFoot();ctx.restore();
+      ctx.restore();ctx.restore();
+    }else if(jkickRaise>0){
+      const kr=Math.min(jkickRaise/1.1,1.0);
+      ctx.save();ctx.translate(-12,-75);ctx.rotate(0.2+0.4*kr);
+      blLimb(22,16,34,true);
+      ctx.save();ctx.translate(0,34);blKnee(true);
+      ctx.rotate(0.5+0.3*kr);chCalf();
       ctx.save();ctx.translate(0,22);chFoot();ctx.restore();
       ctx.restore();ctx.restore();
     }else{
@@ -2004,6 +2040,8 @@ const R={
     const harmExt=isHP?Math.min(mf*12,36):0;
     const kickRaise=isAc&&f.md&&f.md===f.def.moves.lk?Math.min(mf*0.14,0.85):0;
     const hkickRaise=isHK?Math.min(mf*0.14,0.80):0;
+    const isJK=isAc&&f.md&&f.md===f.def.moves.jk;
+    const jkickRaise=isJK?Math.min(mf*0.17,1.1):0;
     const legSwing=walking?Math.sin(fr*1.2):0;
     const armSwing=walking?Math.sin(fr*1.2):0;
     const lariat=st==='spec'&&mp==='ac'&&f.md&&f.md.id==='lariat';
@@ -2100,6 +2138,14 @@ const R={
       ctx.rotate(1.4*(1-kr));aSkinCalf(22,15,26);
       ctx.save();ctx.translate(0,26);aBootFoot();ctx.restore();
       ctx.restore();ctx.restore();
+    }else if(jkickRaise>0){
+      const kr=Math.min(jkickRaise/1.1,1.0);
+      ctx.save();ctx.translate(-14,-80);ctx.rotate(0.2+0.4*kr);
+      aShortsLimb(30,22,38,true);
+      ctx.save();ctx.translate(0,38);aSkinKnee();
+      ctx.rotate(0.5+0.3*kr);aSkinCalf(22,15,26);
+      ctx.save();ctx.translate(0,26);aBootFoot();ctx.restore();
+      ctx.restore();ctx.restore();
     }else{
       const aBkTA=walking?-legSwing*0.30:-0.06;
       const aBkCA=walking?legSwing*0.22:0.12;
@@ -2119,6 +2165,14 @@ const R={
       aShortsLimb(30,22,38,false);
       ctx.save();ctx.translate(0,38);aSkinKnee();
       ctx.rotate(1.4*(1-kr));aSkinCalf(22,15,26);
+      ctx.save();ctx.translate(0,26);aBootFoot();ctx.restore();
+      ctx.restore();ctx.restore();
+    }else if(jkickRaise>0){
+      const kr=Math.min(jkickRaise/1.1,1.0);
+      ctx.save();ctx.translate(14,-80);ctx.rotate(-1.5*kr);
+      aShortsLimb(30,22,38,false);
+      ctx.save();ctx.translate(0,38);aSkinKnee();
+      ctx.rotate(1.2*(1-kr));aSkinCalf(22,15,26);
       ctx.save();ctx.translate(0,26);aBootFoot();ctx.restore();
       ctx.restore();ctx.restore();
     }else{
@@ -2297,6 +2351,8 @@ const R={
     const hpunchExt=isHP?Math.min(mf*9,28):0;
     const kickRaise=isAc&&f.md&&f.md===f.def.moves.lk?Math.min(mf*0.14,0.85):0;
     const hkickRaise=isHK?Math.min(mf*0.14,0.80):0;
+    const isJK=isAc&&f.md&&f.md===f.def.moves.jk;
+    const jkickRaise=isJK?Math.min(mf*0.17,1.1):0;
     const legSwing=walking?Math.sin(fr*1.5):0;
     const armSwing=walking?Math.sin(fr*1.5):0;
 
@@ -2375,6 +2431,14 @@ const R={
       ctx.rotate(1.4*(1-kr));dlLimb(10,7,28,'ca');
       ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
       ctx.restore();ctx.restore();
+    }else if(jkickRaise>0){
+      const kr=Math.min(jkickRaise/1.1,1.0);
+      ctx.save();ctx.translate(-11,-80);ctx.rotate(0.2+0.4*kr);
+      dlLimb(14,10,40,'th');
+      ctx.save();ctx.translate(0,40);dlKnee();
+      ctx.rotate(0.5+0.3*kr);dlLimb(10,7,28,'ca');
+      ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
+      ctx.restore();ctx.restore();
     }else{
       const bkTA=walking?-legSwing*0.30:-0.06;
       const bkCA=walking?legSwing*0.22:0.12;
@@ -2401,6 +2465,14 @@ const R={
       dlLimb(14,10,40,'th');
       ctx.save();ctx.translate(0,40);dlKnee();
       ctx.rotate(1.4*(1-kr));dlLimb(10,7,28,'ca');
+      ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
+      ctx.restore();ctx.restore();
+    }else if(jkickRaise>0){
+      const kr=Math.min(jkickRaise/1.1,1.0);
+      ctx.save();ctx.translate(6,-80);ctx.rotate(-1.5*kr);
+      dlLimb(14,10,40,'th');
+      ctx.save();ctx.translate(0,40);dlKnee();
+      ctx.rotate(1.2*(1-kr));dlLimb(10,7,28,'ca');
       ctx.save();ctx.translate(0,28);dlSole();ctx.restore();
       ctx.restore();ctx.restore();
     }else{
